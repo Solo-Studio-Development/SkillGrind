@@ -7,13 +7,10 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.*;
 
-public class GeneralEvents implements Listener {
+public class GrindstoneListener implements Listener {
     @EventHandler
-    public void onGrindstoneOpen(InventoryOpenEvent event) {
-        if (event.getInventory().getType() == InventoryType.GRINDSTONE
-                && event.getPlayer() instanceof Player player
-                && player.isSneaking()) {
-
+    public void onGrindstoneOpen(final InventoryOpenEvent event) {
+        if (event.getInventory().getType() == InventoryType.GRINDSTONE && event.getPlayer() instanceof Player player && player.isSneaking()) {
             event.setCancelled(true);
             new MenuSkillGrind(MenuData.getMenuUtils(player)).open();
         }

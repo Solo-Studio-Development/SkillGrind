@@ -1,0 +1,28 @@
+# ============================================================== #
+# Language Configuration Section                                 #
+# ============================================================== #
+
+language: "hu" # Supported languages -> hu, en, es, fr, it, pl, pt
+
+# ============================================================== #
+# Command Settings                                               #
+# ============================================================== #
+
+aliases:
+  - "grindstone"
+  - "gs"
+
+# ============================================================== #
+# Menu Settings                                                  #
+# ============================================================== #
+
+grindstone:
+  title: "&bGrindstone"
+  filler-glass-item:
+    material: BLACK_STAINED_GLASS_PANE
+    amount: 1
+    name: " "
+    lore:
+      - " "
+  click-sound: UI_BUTTON_CLICK
+  default-book-name: "&bEnchantments"

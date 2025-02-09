@@ -1,33 +1,41 @@
 package net.solostudio.skillgrind.item;
 
+import net.solostudio.skillgrind.SkillGrind;
 import net.solostudio.skillgrind.processor.MessageProcessor;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
 public interface ItemFactory {
-    static ItemFactory create(@NotNull Material material) {
+    @Contract("_ -> new")
+    static @NotNull ItemFactory create(@NotNull Material material) {
         return new ItemBuilder(material);
     }
 
-    static ItemFactory create(@NotNull Material material, int count) {
+    @Contract("_, _ -> new")
+    static @NotNull ItemFactory create(@NotNull Material material, int count) {
         return new ItemBuilder(material, count);
     }
 
-    static ItemFactory create(@NotNull Material material, int count, short damage) {
+    @Contract("_, _, _ -> new")
+    static @NotNull ItemFactory create(@NotNull Material material, int count, short damage) {
         return new ItemBuilder(material, count, damage);
     }
 
-    static ItemFactory create(@NotNull Material material, int count, short damage, byte data) {
+    @Contract("_, _, _, _ -> new")
+    static @NotNull ItemFactory create(@NotNull Material material, int count, short damage, byte data) {
         return new ItemBuilder(material, count, damage, data);
     }
 
-    static ItemFactory create(ItemStack item) {
+    @Contract("_ -> new")
+    static @NotNull ItemFactory create(ItemStack item) {
         return new ItemBuilder(item);
     }
 
@@ -44,7 +52,7 @@ public interface ItemFactory {
 
     void addEnchantment(@NotNull Enchantment enchantment, int level);
 
-    default ItemFactory addEnchantments(Map<Enchantment, Integer> enchantments) {
+    default ItemFactory addEnchantments(@NotNull Map<Enchantment, Integer> enchantments) {
         enchantments.forEach(this::addEnchantment);
 
         return this;
@@ -87,5 +95,26 @@ public interface ItemFactory {
                                     .map(MessageProcessor::process).toArray(String[]::new))
                             .finish();
                 });
+    }
+
+    static Optional<ItemStack> createItemFromString(@NotNull String path) {
+        return Optional.ofNullable(SkillGrind.getInstance().getConfiguration().getSection(path))
+                .flatMap(ItemFactory::buildItem);
+    }
+
+    static void createItemFromString(@NotNull String path, @NotNull Inventory inventory) {
+        Optional.ofNullable(SkillGrind.getInstance().getConfiguration().getSection(path))
+                .flatMap(section -> {
+                    var itemOpt = buildItem(section);
+                    int slot = section.getInt("slot", 0);
+                    itemOpt.ifPresent(item -> inventory.setItem(slot, item));
+                    return itemOpt;
+                });
+    }
+
+    static int getItemSlotFromString(@NotNull String path) {
+        return Optional.ofNullable(SkillGrind.getInstance().getConfiguration().getSection(path))
+                .map(section -> section.getInt("slot", -1))
+                .orElse(-1);
     }
 }

@@ -4,6 +4,7 @@ import net.solostudio.skillgrind.data.MenuData;
 import net.solostudio.skillgrind.processor.MessageProcessor;
 import org.bukkit.Bukkit;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.jetbrains.annotations.NotNull;
@@ -19,12 +20,12 @@ public abstract class Menu implements InventoryHolder {
     }
 
     public abstract void handleMenu(final InventoryClickEvent event);
+    public void onClose(InventoryCloseEvent event) {}
     public abstract void setMenuItems();
 
     public abstract String getMenuName();
 
     public abstract int getSlots();
-    public abstract int getMenuTick();
 
     @Override
     public @NotNull Inventory getInventory() {
@@ -36,14 +37,10 @@ public abstract class Menu implements InventoryHolder {
 
         setMenuItems();
         menuData.owner().openInventory(inventory);
-        MenuUpdater menuUpdater = new MenuUpdater(this);
-        menuUpdater.start(getMenuTick());
     }
 
     public void close() {
         menuData.owner().closeInventory();
-        MenuUpdater menuUpdater = new MenuUpdater(this);
-        menuUpdater.stop();
         inventory = null;
     }
 
