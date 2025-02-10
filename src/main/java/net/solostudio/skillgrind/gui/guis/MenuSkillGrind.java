@@ -66,9 +66,7 @@ public class MenuSkillGrind extends Menu {
 
     @Override
     public void setMenuItems() {
-        if (getInventory() != null) {
-            Arrays.stream(BORDER_SLOTS).forEach(slot -> getInventory().setItem(slot, ItemKeys.FILLER_GLASS.getItem()));
-        }
+        Arrays.stream(BORDER_SLOTS).forEach(slot -> getInventory().setItem(slot, ItemKeys.FILLER_GLASS.getItem()));
     }
 
     @Override
@@ -80,31 +78,17 @@ public class MenuSkillGrind extends Menu {
     }
 
     private void handleInventoryCleanup(@NotNull Player player) {
-        if (getInventory() == null) return;
-
         ItemStack input = getInventory().getItem(INPUT_SLOT);
+        ItemStack output = getInventory().getItem(OUTPUT_SLOT);
 
-        // Csak akkor add vissza az inputot, ha NINCS módosítva
-        if (input != null && !input.getType().isAir()) {
-            boolean isModified = input.getEnchantments().size() > 0 ||
-                    (input.getItemMeta() instanceof EnchantmentStorageMeta meta &&
-                            meta.getStoredEnchants().size() > 0);
-
-            if (!isModified) {
-                player.getInventory().addItem(input)
-                        .values()
-                        .forEach(item -> player.getWorld().dropItem(player.getLocation(), item));
-            }
+        if (input != null && !input.getType().isAir() && output == null) {
+            player.getInventory().addItem(input)
+                    .values()
+                    .forEach(item -> player.getWorld().dropItem(player.getLocation(), item));
         }
 
         getInventory().clear();
-    }
-
-    private boolean isInputModified(ItemStack input) {
-        // Példa: Ellenőrizd, hogy az inputon vannak-e maradék enchantek
-        return !input.getEnchantments().isEmpty() ||
-                (input.getItemMeta() instanceof EnchantmentStorageMeta meta &&
-                        !meta.getStoredEnchants().isEmpty());
+        GrindstoneUtils.playSound(player);
     }
 
     private void handleInputTransfer(@NotNull final InventoryClickEvent event) {
@@ -167,42 +151,37 @@ public class MenuSkillGrind extends Menu {
     }
 
     private void handleOutputExtraction(@NotNull final InventoryClickEvent event) {
+        if (event.getClick().isShiftClick()) return;
+
         final ItemStack output = event.getCurrentItem();
         if (!GrindstoneUtils.isValidItem(output)) return;
+        if (output == null) return;
 
-        modifyInputItem(output); // Módosítjuk az inputot
-        transferOutput(event, output); // Átadjuk az outputot
+        modifyInputItem(output);
+        transferOutput(event, output);
 
-        // Átadjuk a módosított inputot a játékosnak
         final ItemStack modifiedInput = getInventory().getItem(INPUT_SLOT);
         if (modifiedInput != null && !modifiedInput.getType().isAir()) {
             final Player player = (Player) event.getWhoClicked();
             final Map<Integer, ItemStack> leftovers = player.getInventory().addItem(modifiedInput.clone());
             leftovers.values().forEach(item -> player.getWorld().dropItem(player.getLocation(), item));
-            getInventory().setItem(INPUT_SLOT, null); // Töröljük az input slotot
+            getInventory().setItem(INPUT_SLOT, null);
         }
 
-        getInventory().setItem(OUTPUT_SLOT, null); // Töröljük az output slotot
+        clearEnchantmentState();
+        getInventory().setItem(OUTPUT_SLOT, null);
         closeInventorySafely((Player) event.getWhoClicked());
     }
 
     private void closeInventorySafely(@NotNull Player player) {
-        update(); // Utolsó frissítés
-        player.closeInventory(); // Bezárás
-    }
-
-    private void updateInput() {
-        ItemStack input = getInventory().getItem(INPUT_SLOT);
-        if (input != null) {
-            getInventory().setItem(INPUT_SLOT, input); // Kényszerítsd ki a frissítést
-        }
+        update();
+        player.closeInventory();
     }
 
     private void modifyInputItem(@NotNull ItemStack output) {
         ItemStack input = getInventory().getItem(INPUT_SLOT);
         if (input == null || input.getType().isAir()) return;
 
-        // Klónozd az inputot, és alkalmazd a módosításokat
         ItemStack modifiedInput = input.clone();
         ItemMeta inputMeta = modifiedInput.getItemMeta();
 
@@ -212,14 +191,10 @@ public class MenuSkillGrind extends Menu {
         outputMeta.getStoredEnchants().forEach((enchant, level) -> {
             int remaining = totalEnchants.getOrDefault(enchant, 0) - level;
 
-            if (inputMeta instanceof EnchantmentStorageMeta storageMeta) {
-                handleEnchantedBook(storageMeta, enchant, remaining);
-            } else {
-                handleRegularItem(inputMeta, enchant, remaining);
-            }
+            if (inputMeta instanceof EnchantmentStorageMeta storageMeta) handleEnchantedBook(storageMeta, enchant, remaining);
+            else handleRegularItem(inputMeta, enchant, remaining);
         });
 
-        // Frissítsd az inputot az inventoryban
         modifiedInput.setItemMeta(inputMeta);
         getInventory().setItem(INPUT_SLOT, modifiedInput);
     }
@@ -237,27 +212,17 @@ public class MenuSkillGrind extends Menu {
     private void transferOutput(@NotNull InventoryClickEvent event, ItemStack output) {
         var player = (Player) event.getWhoClicked();
 
-        // Töröld az output slotot és tiltsd le az eseményt
         event.setCurrentItem(null);
-        event.setCancelled(true); // Ez blokkolja az alapértelmezett viselkedést
+        event.setCancelled(true);
 
-        // Shift + kattintás kezelése
-        if (event.getClick().isShiftClick()) {
-            // Adj hozzá az inventoryhoz, és eldobd a maradékot
-            Map<Integer, ItemStack> leftovers = player.getInventory().addItem(output);
-            leftovers.values().forEach(item ->
-                    player.getWorld().dropItem(player.getLocation(), item)
-            );
-        } else {
-            player.setItemOnCursor(output);
-        }
-
-        update();
+        player.setItemOnCursor(output);
     }
 
     private void handleInventoryInteractions(@NotNull final InventoryClickEvent event) {
         if (event.isShiftClick() && event.getClickedInventory() == event.getView().getBottomInventory()) {
             ItemStack clicked = event.getCurrentItem();
+
+            if (clicked == null) return;
 
             if (GrindstoneUtils.isValidItem(clicked) && !GrindstoneUtils.isValidItem(getInput())) {
                 setInput(clicked);
@@ -289,11 +254,9 @@ public class MenuSkillGrind extends Menu {
                     String name = formatEnchantName(enchant);
                     int baseLevel = entry.getValue();
                     int selectedLevel = selectedEnchants.getOrDefault(enchant, 0);
-                    String color = (currentIndex == getEnchantPosition(enchant)) ? "&a" : "&7";
+                    String color = (currentIndex == getEnchantPosition(enchant)) ? ConfigKeys.GRINDSTONE_SELECTED_ENCHANT_COLOR.getString() : ConfigKeys.GRINDSTONE_UNSELECTED_ENCHANT_COLOR.getString();
 
-                    return MessageProcessor.process(
-                            "%s⯈ %s %s &8→ &7%s".formatted(color, name, baseLevel, selectedLevel)
-                    );
+                    return MessageProcessor.process(("%s" + ConfigKeys.GRINDSTONE_BEFORE_SYMBOL.getString() + "%s %s &8" + ConfigKeys.GRINDSTONE_AFTER_SYMBOL.getString() + "&7%s").formatted(color, name, baseLevel, selectedLevel));
                 })
                 .toArray(String[]::new);
     }
@@ -321,6 +284,7 @@ public class MenuSkillGrind extends Menu {
 
     private int getEnchantPosition(@NotNull Enchantment enchant) {
         int position = 0;
+
         for (var enchantment : totalEnchants.keySet()) {
             if (enchantment.equals(enchant)) return position;
             position++;

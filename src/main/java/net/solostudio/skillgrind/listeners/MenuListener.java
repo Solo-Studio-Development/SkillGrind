@@ -6,19 +6,16 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.jetbrains.annotations.NotNull;
 
 public class MenuListener implements Listener {
     @EventHandler
-    public void onClick(final InventoryClickEvent event) {
-        if (event.getInventory().getHolder() instanceof Menu menu) {
-            menu.handleMenu(event);
-        }
+    public void onClick(final @NotNull InventoryClickEvent event) {
+        if (event.getInventory().getHolder() instanceof Menu menu) menu.handleMenu(event);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    public void onClose(final InventoryCloseEvent event) {
-        if (event.getInventory().getHolder() instanceof Menu menu) {
-            menu.onClose(event);
-        }
+    public void onClose(final @NotNull InventoryCloseEvent event) {
+        if (event.getInventory().getHolder() instanceof Menu menu) menu.onClose(event);
     }
 }

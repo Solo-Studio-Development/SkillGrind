@@ -44,9 +44,7 @@ public abstract class Menu implements InventoryHolder {
         if (closing || inventory == null) return;
         closing = true;
 
-        if (menuData.owner().getOpenInventory().getTopInventory() == inventory) {
-            menuData.owner().closeInventory();
-        }
+        if (menuData.owner().getOpenInventory().getTopInventory() == inventory) menuData.owner().closeInventory();
         inventory = null;
     }
 }

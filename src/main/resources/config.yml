@@ -2,7 +2,7 @@
 # Language Configuration Section                                 #
 # ============================================================== #
 
-language: "hu" # Supported languages -> hu, en, es, fr, it, pl, pt
+language: "en" # Supported languages -> hu, en, es, fr, it, pl, pt
 
 # ============================================================== #
 # Command Settings                                               #
@@ -26,3 +26,7 @@ grindstone:
       - " "
   click-sound: UI_BUTTON_CLICK
   default-book-name: "&bEnchantments"
+  before-symbol: "• "
+  after-symbol: "» "
+  selected-enchantment-color: "&a"
+  unselected-enchantment-color: "&7"

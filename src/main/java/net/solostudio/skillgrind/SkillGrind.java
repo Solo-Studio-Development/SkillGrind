@@ -8,6 +8,7 @@ import net.solostudio.skillgrind.enums.LanguageTypes;
 import net.solostudio.skillgrind.enums.keys.ConfigKeys;
 import net.solostudio.skillgrind.language.Language;
 import revxrsal.zapper.ZapperJavaPlugin;
+
 import java.util.Arrays;
 
 import static net.solostudio.skillgrind.utils.StartingUtils.*;
@@ -38,17 +39,15 @@ public final class SkillGrind extends ZapperJavaPlugin {
     private void initializeComponents() {
         config = new Config();
 
-        //Arrays.stream(LanguageTypes.values())
-        //        .toList()
-        //        .stream()
-        //        .filter(type -> type.name().matches(".*[a-z].*"))
-        //        .forEach(type -> {
-        //            saveResourceIfNotExists("locales/messages_" + type.name() + ".yml");
-        //        });
-
+        Arrays.stream(LanguageTypes.values())
+                .toList()
+                .stream()
+                .filter(type -> type.name().matches(".*[a-z].*"))
+                .forEach(type -> {
+                    saveResourceIfNotExists("locales/messages_" + type.name() + ".yml");
+                });
 
         saveResourceIfNotExists("config.yml");
-        saveResourceIfNotExists("locales/messages_hu.yml");
 
         language = new Language("messages_" + LanguageTypes.valueOf(ConfigKeys.LANGUAGE.getString()));
     }

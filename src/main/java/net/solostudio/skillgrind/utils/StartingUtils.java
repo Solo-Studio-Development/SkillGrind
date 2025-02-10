@@ -16,6 +16,6 @@ public class StartingUtils {
 
     public void registerListenersAndCommands() {
         RegisterUtils.registerListeners();
-        //RegisterUtils.registerCommands();
+        RegisterUtils.registerCommands();
     }
 }

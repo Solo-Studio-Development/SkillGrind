@@ -1,0 +1,5 @@
+prefix: "&#74D9CD&lSKILLGRIND &8| "
+
+messages:
+  reload: "%prefix% &aFichiers rechargés avec succès !"
+  no-permission: "%prefix% &cVous n'avez pas la permission !"

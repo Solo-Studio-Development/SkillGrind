@@ -9,7 +9,8 @@ import java.util.List;
 
 @Getter
 public enum MessageKeys {
-    RELOAD("messages.reload");
+    RELOAD("messages.reload"),
+    NO_PERMISSION("messages.no-permission");
 
     private final String path;
 

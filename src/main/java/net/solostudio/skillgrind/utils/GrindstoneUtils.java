@@ -16,14 +16,8 @@ public class GrindstoneUtils {
         player.playSound(player.getLocation(), Sound.valueOf(ConfigKeys.GRINDSTONE_CLICK_SOUND.getString()), 0.8f, 1.0f);
     }
 
-    public static boolean isValidItem(@Nullable ItemStack item) {
-        if (item == null || item.getType() == Material.AIR) {
-            return false;
-        }
-
-        // Érvényes, ha van varázslata vagy varázskönyvként tárolt varázslat
-        return !item.getEnchantments().isEmpty()
-                || (item.getItemMeta() instanceof EnchantmentStorageMeta meta
-                && !meta.getStoredEnchants().isEmpty());
+    public boolean isValidItem(@Nullable ItemStack item) {
+        if (item == null || item.getType() == Material.AIR) return false;
+        return !item.getEnchantments().isEmpty() || (item.getItemMeta() instanceof EnchantmentStorageMeta meta && !meta.getStoredEnchants().isEmpty());
     }
 }
