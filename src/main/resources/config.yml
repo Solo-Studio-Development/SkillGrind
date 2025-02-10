@@ -27,6 +27,6 @@ grindstone:
   click-sound: UI_BUTTON_CLICK
   default-book-name: "&bEnchantments"
   before-symbol: "• "
-  after-symbol: "» "
+  after-symbol: " » "
   selected-enchantment-color: "&a"
   unselected-enchantment-color: "&7"

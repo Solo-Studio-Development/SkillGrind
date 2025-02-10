@@ -1,4 +1,4 @@
-package net.solostudio.skillgrind.exception;
+package net.solostudio.skillgrind.handlers;
 
 import net.solostudio.skillgrind.enums.keys.MessageKeys;
 import org.jetbrains.annotations.NotNull;

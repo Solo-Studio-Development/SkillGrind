@@ -1,4 +1,4 @@
-package net.solostudio.skillgrind.manager;
+package net.solostudio.skillgrind.handlers;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -16,12 +16,12 @@ import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
-public class ConfigurationManager {
+public class ConfigurationHandler {
     @Getter private YamlConfiguration yml;
     @Getter private String name;
     private File config;
 
-    public ConfigurationManager(@NotNull String dir, @NotNull String name) {
+    public ConfigurationHandler(@NotNull String dir, @NotNull String name) {
         File file = new File(dir);
 
         if (!file.exists()) {

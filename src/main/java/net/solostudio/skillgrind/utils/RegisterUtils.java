@@ -4,7 +4,7 @@ import lombok.experimental.UtilityClass;
 import net.solostudio.skillgrind.SkillGrind;
 import net.solostudio.skillgrind.commands.CommandGrindstone;
 import net.solostudio.skillgrind.enums.keys.ConfigKeys;
-import net.solostudio.skillgrind.exception.CommandExceptionHandler;
+import net.solostudio.skillgrind.handlers.CommandExceptionHandler;
 import net.solostudio.skillgrind.listeners.GrindstoneListener;
 import net.solostudio.skillgrind.listeners.MenuListener;
 import org.bukkit.Bukkit;
