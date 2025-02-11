@@ -44,17 +44,13 @@ public final class SkillGrind extends ZapperJavaPlugin {
         config = new Config();
 
         Arrays.stream(LanguageTypes.values())
-                .toList()
-                .stream()
-                .filter(type -> type.name().matches(".*[a-z].*"))
                 .forEach(type -> {
-                    saveResourceIfNotExists("locales/messages_" + type.name() + ".yml");
+                    saveResourceIfNotExists("locales/messages_" + type.name().toLowerCase() + ".yml");
                 });
 
         saveResourceIfNotExists("config.yml");
 
-        language = new Language("messages_" + LanguageTypes.valueOf(ConfigKeys.LANGUAGE.getString().toUpperCase()));
-
+        language = new Language("messages_" + LanguageTypes.valueOf(ConfigKeys.LANGUAGE.getString().toUpperCase()).name().toLowerCase());
         enchantHandler = new EnchantHandler();
         nameCache = new NameCache();
     }

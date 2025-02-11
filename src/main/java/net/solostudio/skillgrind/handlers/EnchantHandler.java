@@ -4,11 +4,14 @@ import lombok.Getter;
 import net.solostudio.skillgrind.SkillGrind;
 import net.solostudio.skillgrind.cache.NameCache;
 import net.solostudio.skillgrind.enums.keys.ConfigKeys;
+import net.solostudio.skillgrind.enums.keys.MessageKeys;
 import net.solostudio.skillgrind.item.ItemFactory;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.EnchantmentStorageMeta;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
 
@@ -102,5 +105,29 @@ public class EnchantHandler {
         return ItemFactory.create(Material.ENCHANTED_BOOK)
                 .setName(ConfigKeys.GRINDSTONE_DEFAULT_BOOK_NAME.getString())
                 .finish();
+    }
+
+    public boolean canAffordLevelReduction(Player player, int levelsToRemove) {
+        int requiredLevels = levelsToRemove * ConfigKeys.GRINDSTONE_PER_XP_PER_LEVEL.getInt();
+        int playerLevel = player.getLevel();
+        float playerExp = player.getExp(); // XP pontok 0.0 és 1.0 között
+
+        // Számítsuk ki a teljes XP mennyiséget (szintek + XP pontok)
+        double totalPlayerXP = playerLevel + playerExp;
+
+        if (totalPlayerXP >= requiredLevels) {
+            // Levonjuk a szükséges XP-t
+            double remainingXP = totalPlayerXP - requiredLevels;
+            player.setLevel((int) remainingXP); // Beállítjuk az új szintet
+            player.setExp((float) (remainingXP - (int) remainingXP)); // Beállítjuk az XP pontokat
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public void sendNotEnoughLevelsMessage(@NotNull Player player, int levelsToRemove) {
+        int requiredLevels = levelsToRemove * ConfigKeys.GRINDSTONE_PER_XP_PER_LEVEL.getInt();
+        player.sendMessage(MessageKeys.NOT_ENOUGH_LEVEL.getMessage());
     }
 }

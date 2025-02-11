@@ -10,7 +10,8 @@ import java.util.List;
 @Getter
 public enum MessageKeys {
     RELOAD("messages.reload"),
-    NO_PERMISSION("messages.no-permission");
+    NO_PERMISSION("messages.no-permission"),
+    NOT_ENOUGH_LEVEL("messages.not-enough-level");
 
     private final String path;
 

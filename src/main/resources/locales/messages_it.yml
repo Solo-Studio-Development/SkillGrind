@@ -3,3 +3,4 @@ prefix: "&#74D9CD&lSKILLGRIND &8| "
 messages:
   reload: "%prefix% &aFile ricaricati con successo!"
   no-permission: "%prefix% &cNon hai il permesso!"
+  not-enough-level: "%prefix% &cNon hai abbastanza livello per questo!"

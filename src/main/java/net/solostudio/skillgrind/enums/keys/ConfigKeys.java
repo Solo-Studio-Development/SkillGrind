@@ -19,7 +19,8 @@ public enum ConfigKeys {
     GRINDSTONE_BEFORE_SYMBOL("grindstone.before-symbol"),
     GRINDSTONE_AFTER_SYMBOL("grindstone.after-symbol"),
     GRINDSTONE_SELECTED_ENCHANT_COLOR("grindstone.selected-enchantment-color"),
-    GRINDSTONE_UNSELECTED_ENCHANT_COLOR("grindstone.unselected-enchantment-color");
+    GRINDSTONE_UNSELECTED_ENCHANT_COLOR("grindstone.unselected-enchantment-color"),
+    GRINDSTONE_PER_XP_PER_LEVEL("grindstone.price-xp-per-level");
 
     private final String path;
 

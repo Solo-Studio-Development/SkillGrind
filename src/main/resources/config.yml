@@ -17,16 +17,17 @@ aliases:
 # ============================================================== #
 
 grindstone:
-  title: "&bGrindstone"
+  title: "&bGrindstone" # The title in the menu
   filler-glass-item:
     material: BLACK_STAINED_GLASS_PANE
     amount: 1
     name: " "
     lore:
       - " "
-  click-sound: UI_BUTTON_CLICK
-  default-book-name: "&bEnchantments"
-  before-symbol: "• "
-  after-symbol: " » "
+  click-sound: UI_BUTTON_CLICK # This sound will play on every click action in the menu
+  default-book-name: "&bEnchantments" # The book's name where the enchantments will be listed
+  before-symbol: "• " # This is the symbol which indicates the enchantment you at
+  after-symbol: " » " # This is the symbol which indicates the level you select
   selected-enchantment-color: "&a"
   unselected-enchantment-color: "&7"
+  price-xp-per-level: 1 # This is the cost of the use per level so if you take off unbreaking 2 it will deduct 2 xp because 2 * 1 = 2

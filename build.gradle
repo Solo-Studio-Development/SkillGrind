@@ -6,7 +6,7 @@ plugins {
 }
 
 group = 'net.solostudio'
-version = '1.0.0'
+version = '1.0.1'
 
 repositories {
     mavenCentral()
@@ -41,7 +41,7 @@ compileJava {
 
 zapper {
     libsFolder = "libs"
-    relocationPrefix = "net.solostudio.skillgrind.libs"
+    relocationPrefix = "net.solostudio.skillgrind.libraries"
 
     repositories { it.includeProjectRepositories() }
 

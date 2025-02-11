@@ -79,9 +79,7 @@ public final class MenuSkillGrind extends Menu {
         Optional.ofNullable(getInventory().getItem(INPUT_SLOT))
                 .filter(item -> !item.getType().isAir())
                 .ifPresent(item -> {
-                    if (getInventory().getItem(OUTPUT_SLOT) == null) {
-                        GrindstoneUtils.safeGiveItem(player, item);
-                    }
+                    if (getInventory().getItem(OUTPUT_SLOT) == null) GrindstoneUtils.safeGiveItem(player, item);
                 });
 
         getInventory().clear();
@@ -130,9 +128,14 @@ public final class MenuSkillGrind extends Menu {
         Optional.ofNullable(event.getCurrentItem())
                 .filter(GrindstoneUtils::isValidItem)
                 .ifPresent(output -> {
-                    modifyInputItem(output);
-                    transferOutput(event, output);
-                    cleanupAfterExtraction((Player) event.getWhoClicked());
+                    Player player = (Player) event.getWhoClicked();
+                    int levelsToRemove = calculateLevelsToRemove(output);
+
+                    if (enchantHandler.canAffordLevelReduction(player, levelsToRemove)) {
+                        modifyInputItem(output);
+                        transferOutput(event, output);
+                        cleanupAfterExtraction(player);
+                    } else enchantHandler.sendNotEnoughLevelsMessage(player, levelsToRemove);
                 });
     }
 
@@ -186,7 +189,7 @@ public final class MenuSkillGrind extends Menu {
     private void handleInventoryInteractions(@NotNull final InventoryClickEvent event) {
         if (event.isShiftClick() && event.getClickedInventory() == event.getView().getBottomInventory()) {
             Optional.ofNullable(event.getCurrentItem())
-                    .filter(item -> GrindstoneUtils.isValidItem(item) && !GrindstoneUtils.isValidItem(getInput()))
+                    .filter(item -> GrindstoneUtils.isValidItem(item) && !GrindstoneUtils.isValidItem(getInventory().getItem(INPUT_SLOT)))
                     .ifPresent(item -> {
                         setInput(item);
                         event.setCurrentItem(null);
@@ -242,7 +245,8 @@ public final class MenuSkillGrind extends Menu {
         return output;
     }
 
-    private ItemStack getInput() {
-        return getInventory().getItem(INPUT_SLOT);
+    private int calculateLevelsToRemove(@NotNull ItemStack output) {
+        EnchantmentStorageMeta outputMeta = (EnchantmentStorageMeta) output.getItemMeta();
+        return outputMeta.getStoredEnchants().values().stream().mapToInt(Integer::intValue).sum();
     }
 }

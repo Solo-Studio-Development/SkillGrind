@@ -3,3 +3,4 @@ prefix: "&#74D9CD&lSKILLGRIND &8| "
 messages:
   reload: "%prefix% &aPomyślnie przeładowano pliki!"
   no-permission: "%prefix% &cNie masz uprawnień!"
+  not-enough-level: "%prefix% &cNie masz wystarczającego poziomu!"
