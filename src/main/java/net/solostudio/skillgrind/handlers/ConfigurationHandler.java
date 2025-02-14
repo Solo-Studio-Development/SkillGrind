@@ -1,53 +1,55 @@
 package net.solostudio.skillgrind.handlers;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.solostudio.skillgrind.processor.MessageProcessor;
 import net.solostudio.skillgrind.utils.LoggerUtils;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 
 @Slf4j
-@RequiredArgsConstructor
-public class ConfigurationHandler {
-    @Getter private YamlConfiguration yml;
-    @Getter private String name;
-    private File config;
+public record ConfigurationHandler(@NotNull YamlConfiguration yml, @NotNull String name, @NotNull File config) {
 
-    public ConfigurationHandler(@NotNull String dir, @NotNull String name) {
-        File file = new File(dir);
+    public ConfigurationHandler {}
 
-        if (!file.exists()) {
-            if (!file.mkdirs()) return;
+    @Contract("_, _ -> new")
+    public static @NotNull ConfigurationHandler of(@NotNull String dir, @NotNull String name) {
+        Path directory = Path.of(dir);
+        try {
+            Files.createDirectories(directory);
+        } catch (IOException exception) {
+            LoggerUtils.error("Failed to create directories: " + exception.getMessage());
+            throw new RuntimeException(exception);
         }
 
-        config = new File(dir, name + ".yml");
+        Path configPath = directory.resolve(name + ".yml");
+        File configFile = configPath.toFile();
 
-        if (!config.exists()) {
+        if (!configFile.exists()) {
             try {
-                if (!config.createNewFile()) return;
+                Files.createFile(configPath);
             } catch (IOException exception) {
-                LoggerUtils.error(exception.getMessage());
+                LoggerUtils.error("Failed to create config file: " + exception.getMessage());
+                throw new RuntimeException(exception);
             }
         }
 
-        yml = YamlConfiguration.loadConfiguration(config);
-
+        YamlConfiguration yml = YamlConfiguration.loadConfiguration(configFile);
         yml.options().copyDefaults(true);
 
-        this.name = name;
+        return new ConfigurationHandler(yml, name, configFile);
     }
 
     public void reload() {
-        yml = YamlConfiguration.loadConfiguration(config);
-
+        YamlConfiguration.loadConfiguration(config).options().copyDefaults(true);
         save();
     }
 
@@ -60,16 +62,14 @@ public class ConfigurationHandler {
         try {
             yml.save(config);
         } catch (IOException exception) {
-            LoggerUtils.error(exception.getMessage());
+            LoggerUtils.error("Failed to save config: " + exception.getMessage());
         }
     }
 
     public List<String> getList(@NotNull String path) {
-        return yml.getStringList(path)
-                .stream()
+        return yml.getStringList(path).stream()
                 .map(MessageProcessor::process)
                 .toList();
-
     }
 
     public boolean getBoolean(@NotNull String path) {
@@ -86,9 +86,5 @@ public class ConfigurationHandler {
 
     public @Nullable ConfigurationSection getSection(@NotNull String path) {
         return yml.getConfigurationSection(path);
-    }
-
-    public void setName(@NotNull String name) {
-        this.name = name;
     }
 }

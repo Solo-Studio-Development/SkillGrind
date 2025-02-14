@@ -1,11 +1,15 @@
 package net.solostudio.skillgrind.config;
 
+import lombok.Getter;
 import net.solostudio.skillgrind.SkillGrind;
 import net.solostudio.skillgrind.handlers.ConfigurationHandler;
 
-public class Config extends ConfigurationHandler {
+@Getter
+public class Config {
+    private final ConfigurationHandler handler;
+
     public Config() {
-        super(SkillGrind.getInstance().getDataFolder().getPath(), "config");
-        save();
+        handler = ConfigurationHandler.of(SkillGrind.getInstance().getDataFolder().getPath(), "config");
+        handler.save();
     }
 }

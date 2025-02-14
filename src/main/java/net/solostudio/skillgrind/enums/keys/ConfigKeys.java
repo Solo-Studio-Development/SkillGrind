@@ -14,7 +14,6 @@ public enum ConfigKeys {
 
     GRINDSTONE_TITLE("grindstone.title"),
     GRINDSTONE_CLICK_SOUND("grindstone.click-sound"),
-    GRINDSTONE_DEFAULT_BOOK_NAME("grindstone.default-book-name"),
 
     GRINDSTONE_BEFORE_SYMBOL("grindstone.before-symbol"),
     GRINDSTONE_AFTER_SYMBOL("grindstone.after-symbol"),

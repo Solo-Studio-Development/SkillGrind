@@ -24,8 +24,15 @@ grindstone:
     name: " "
     lore:
       - " "
-  click-sound: UI_BUTTON_CLICK # This sound will play on every click action in the menu
-  default-book-name: "&bEnchantments" # The book's name where the enchantments will be listed
+  enchantment-book-item:
+    material: ENCHANTED_BOOK
+    name: "&bEnchantments"
+    amount: 1
+    lore:
+      - ""
+      - "&aAvailable enchantments"
+      - ""
+  click-sound: BLOCK_NOTE_BLOCK_BELL # This sound will play on every click action in the menu
   before-symbol: "• " # This is the symbol which indicates the enchantment you at
   after-symbol: " » " # This is the symbol which indicates the level you select
   selected-enchantment-color: "&a"

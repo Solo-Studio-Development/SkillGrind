@@ -7,7 +7,8 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
 public enum ItemKeys {
-    FILLER_GLASS("grindstone.filler-glass-item");
+    FILLER_GLASS("grindstone.filler-glass-item"),
+    ENCHANTMENT_BOOK("grindstone.enchantment-book-item");
 
     private final String path;
 

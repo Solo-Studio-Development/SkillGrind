@@ -4,6 +4,7 @@ import net.solostudio.skillgrind.SkillGrind;
 import net.solostudio.skillgrind.data.MenuData;
 import net.solostudio.skillgrind.enums.keys.ConfigKeys;
 import net.solostudio.skillgrind.enums.keys.ItemKeys;
+import net.solostudio.skillgrind.enums.keys.MessageKeys;
 import net.solostudio.skillgrind.gui.Menu;
 import net.solostudio.skillgrind.handlers.EnchantHandler;
 import net.solostudio.skillgrind.processor.MessageProcessor;
@@ -30,14 +31,13 @@ public final class MenuSkillGrind extends Menu {
     private static final int OUTPUT_SLOT = 7;
 
     private final EnchantHandler enchantHandler = SkillGrind.getInstance().getEnchantHandler();
-    private final ItemStack cachedEnchantedBook = enchantHandler.createBaseBook();
 
     public MenuSkillGrind(@NotNull MenuData menuData) {
         super(menuData);
     }
 
     @Override
-    public String getMenuName() {
+    public @NotNull String getMenuName() {
         return ConfigKeys.GRINDSTONE_TITLE.getString();
     }
 
@@ -70,19 +70,16 @@ public final class MenuSkillGrind extends Menu {
         if (!event.getInventory().equals(getInventory())) return;
 
         final Player player = (Player) event.getPlayer();
-        handleInventoryCleanup(player);
+        ItemStack inputItem = getInventory().getItem(INPUT_SLOT);
+
+        if (inputItem != null && !inputItem.getType().isAir()) GrindstoneUtils.safeGiveItem(player, inputItem);
+
+        getInventory().setItem(INPUT_SLOT, null);
+        getInventory().setItem(OUTPUT_SLOT, null);
+
+        enchantHandler.clear();
         GrindstoneUtils.playSound(player);
         close();
-    }
-
-    private void handleInventoryCleanup(@NotNull Player player) {
-        Optional.ofNullable(getInventory().getItem(INPUT_SLOT))
-                .filter(item -> !item.getType().isAir())
-                .ifPresent(item -> {
-                    if (getInventory().getItem(OUTPUT_SLOT) == null) GrindstoneUtils.safeGiveItem(player, item);
-                });
-
-        getInventory().clear();
     }
 
     private void handleInputTransfer(@NotNull final InventoryClickEvent event) {
@@ -135,7 +132,7 @@ public final class MenuSkillGrind extends Menu {
                         modifyInputItem(output);
                         transferOutput(event, output);
                         cleanupAfterExtraction(player);
-                    } else enchantHandler.sendNotEnoughLevelsMessage(player, levelsToRemove);
+                    } else player.sendMessage(MessageKeys.NOT_ENOUGH_LEVEL.getMessage());
                 });
     }
 
@@ -199,7 +196,7 @@ public final class MenuSkillGrind extends Menu {
     }
 
     private void updateEnchantDisplay() {
-        ItemStack displayBook = cachedEnchantedBook.clone();
+        ItemStack displayBook = ItemKeys.ENCHANTMENT_BOOK.getItem().clone();
         ItemMeta meta = displayBook.getItemMeta();
 
         meta.setLore(enchantHandler.getTotalEnchants().entrySet().stream()

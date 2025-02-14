@@ -9,8 +9,10 @@ import net.solostudio.skillgrind.enums.LanguageTypes;
 import net.solostudio.skillgrind.enums.keys.ConfigKeys;
 import net.solostudio.skillgrind.handlers.EnchantHandler;
 import net.solostudio.skillgrind.language.Language;
+import net.solostudio.skillgrind.utils.LoggerUtils;
 import revxrsal.zapper.ZapperJavaPlugin;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 
 import static net.solostudio.skillgrind.utils.StartingUtils.*;
@@ -33,7 +35,12 @@ public final class SkillGrind extends ZapperJavaPlugin {
     public void onEnable() {
         saveDefaultConfig();
         initializeComponents();
-        registerListenersAndCommands();
+
+        try {
+            initialize();
+        } catch (ClassNotFoundException | InvocationTargetException | InstantiationException | NoSuchMethodException | IllegalAccessException exception) {
+            LoggerUtils.error(exception.getMessage());
+        }
     }
 
     public Config getConfiguration() {
